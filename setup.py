@@ -55,9 +55,9 @@ if __name__ == '__main__':
     setup(
         name="panda_vision",
         version=__version__,
-        packages=find_packages() + ["panda_vision.resources"],
+        packages=find_packages(include=['panda_vision*']),
         package_data={
-            "panda_vision.resources": ["**"],
+            "panda_vision.resources": ["**/*"],
         },
         install_requires=parse_requirements('requirements.txt'),
         extras_require={
@@ -65,17 +65,21 @@ if __name__ == '__main__':
             "full": FULL_REQUIREMENTS,
             "old-unix": OLD_LINUX_REQUIREMENTS
         },
-        description="Un outil pratique pour convertir des PDF en Markdown",
-        long_description=long_description,
-        long_description_content_type="text/markdown",
-        url="https://github.com/EVANE-hub/LayoutFile",
         python_requires=">=3.9",
         entry_points={
             "console_scripts": [
-                "panda-vision = panda_vision.tools.cli:cli",
-                "panda-vision-dev = panda_vision.tools.cli_dev:cli"
+                "panda-vision=panda_vision.tools.cli:cli",
+                "panda-vision-dev=panda_vision.tools.cli_dev:cli"
             ],
         },
-        include_package_data=True,
-        zip_safe=False,
+        author="Abner Evane",
+        description="Un outil pratique pour convertir des PDF en Markdown",
+        long_description=Path("README.md").read_text(encoding="utf-8"),
+        long_description_content_type="text/markdown",
+        url="https://github.com/EVANE-hub/LayoutFile",
+        classifiers=[
+            "Programming Language :: Python :: 3",
+            "License :: OSI Approved :: MIT License",
+            "Operating System :: OS Independent",
+        ],
     )
