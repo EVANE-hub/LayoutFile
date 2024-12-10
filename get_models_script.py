@@ -17,8 +17,8 @@ LAYOUTREADER_PATTERNS = [
     "*.safetensors",
 ]
 
-CONFIG_URL = 'https://github.com/opendatalab/panda_vision/raw/master/magic-pdf.template.json'
-CONFIG_FILENAME = 'magic-pdf.json'
+CONFIG_URL = 'https://github.com/EVANE-hub/LayoutFile/blob/main/PANDA-VISION-CONFIG.json'
+CONFIG_FILENAME = 'PANDA-VISION-CONFIG.json'
 
 
 def download_json(url):
