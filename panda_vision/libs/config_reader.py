@@ -9,7 +9,7 @@ from panda_vision.config.constants import MODEL_NAME
 from panda_vision.libs.commons import parse_bucket_key
 
 # Définition de la constante du nom du fichier de configuration
-CONFIG_FILE_NAME = os.getenv('PANDA_VISION_CONFIG_JSON', 'magic-pdf.json')
+CONFIG_FILE_NAME = os.getenv('PANDA_VISION_CONFIG_JSON', 'PANDA-VISION-CONFIG.json')
 
 
 def read_config():
