@@ -20,9 +20,9 @@ from panda_vision.rw.DiskReaderWriter import DiskReaderWriter
 from panda_vision.tools.common import do_parse, prepare_env
 
 # Configuration initiale
-os.system('wget https://github.com/EVANE-hub/LayoutFile/blob/main/get_models_script.py -O get_models_script.py')
+os.system('wget https://raw.githubusercontent.com/EVANE-hub/LayoutFile/refs/heads/main/get_models_script.py -O get_models_script.py')
 os.system('python get_models_script.py')
-os.system("sed -i 's|cpu|cuda|g' /home/user/magic-pdf.json")
+os.system("sed -i 's|cpu|cuda|g' /home/user/PANDA-VISION-CONFIG.json")
 os.system('cp -r paddleocr /home/user/.paddleocr')
 
 # Configuration LaTeX

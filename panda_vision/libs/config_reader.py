@@ -28,7 +28,7 @@ def read_config():
 
 
 def get_s3_config(bucket_name: str):
-    """Lecture depuis ~/magic-pdf.json."""
+    """Lecture depuis ~/PANDA-VISION-CONFIG.json."""
     config = read_config()
 
     bucket_info = config.get('bucket_info')

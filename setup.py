@@ -49,7 +49,6 @@ OLD_LINUX_REQUIREMENTS = [
 ]
 
 if __name__ == '__main__':
-    # Lecture du README
     readme_path = Path(Path(__file__).parent, 'README.md')
     with readme_path.open(encoding='utf-8') as file:
         long_description = file.read()

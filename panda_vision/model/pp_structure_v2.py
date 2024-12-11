@@ -5,7 +5,7 @@ from loguru import logger
 try:
     from paddleocr import PPStructure
 except ImportError:
-    logger.error('paddleocr non installé, veuillez installer avec "pip install magic-pdf[lite]"')
+    logger.error('paddleocr non installé, veuillez installer avec "pip install panda-vision[lite]"')
     exit(1)
 
 

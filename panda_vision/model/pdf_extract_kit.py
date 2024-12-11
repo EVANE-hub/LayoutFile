@@ -39,7 +39,7 @@ class CustomPEKModel:
         current_file_path = os.path.abspath(__file__)
         # Obtenir le répertoire du fichier actuel (model)
         current_dir = os.path.dirname(current_file_path)
-        # Répertoire parent (magic_pdf)
+        # Répertoire parent 
         root_dir = os.path.dirname(current_dir)
         # Répertoire model_config
         model_config_dir = os.path.join(root_dir, 'resources', 'model_config')

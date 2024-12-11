@@ -17,7 +17,7 @@ LAYOUTREADER_PATTERNS = [
     "*.safetensors",
 ]
 
-CONFIG_URL = 'https://github.com/EVANE-hub/LayoutFile/blob/main/PANDA-VISION-CONFIG.json'
+CONFIG_URL = 'https://raw.githubusercontent.com/EVANE-hub/LayoutFile/refs/heads/main/PANDA-VISION-CONFIG.json'
 CONFIG_FILENAME = 'PANDA-VISION-CONFIG.json'
 
 
