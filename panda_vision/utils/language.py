@@ -1,5 +1,6 @@
 import os
 import unicodedata
+from fast_langdetect import detect_language
 
 if not os.getenv("FTLANG_CACHE"):
     current_file_path = os.path.abspath(__file__)
@@ -7,19 +8,20 @@ if not os.getenv("FTLANG_CACHE"):
     root_dir = os.path.dirname(current_dir)
     ftlang_cache_dir = os.path.join(root_dir, 'resources', 'fasttext-langdetect')
     os.environ["FTLANG_CACHE"] = str(ftlang_cache_dir)
-    # afficher la valeur de FTLANG_CACHE
-
-from fast_langdetect import detect_language
 
 
 def detect_lang(text: str) -> str:
-
+    """
+    Détecter la langue du texte donné.
+    
+    :param text: Le texte dont on veut détecter la langue.
+    :return: Le code de la langue détectée en minuscules, ou une chaîne vide si la détection échoue.
+    """
     if len(text) == 0:
         return ""
     try:
         lang_upper = detect_language(text)
     except:
-        # Supprime les caractères de contrôle du texte HTML
         html_no_ctrl_chars = ''.join([l for l in text if unicodedata.category(l)[0] not in ['C', ]])
         lang_upper = detect_language(html_no_ctrl_chars)
     try:
@@ -27,9 +29,3 @@ def detect_lang(text: str) -> str:
     except:
         lang = ""
     return lang
-
-
-if __name__ == '__main__':
-    print(os.getenv("FTLANG_CACHE"))
-    print(detect_lang("This is a test."))  # Test en anglais
-    print(detect_lang("<html>This is a test</html>"))  # Test en anglais avec balises HTML

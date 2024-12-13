@@ -4,12 +4,12 @@ import fitz
 import numpy as np
 from PIL import Image
 from panda_vision.data.data_reader_writer import DataWriter
-from panda_vision.libs.commons import join_path
-from panda_vision.libs.hash_utils import compute_sha256
+from panda_vision.utils.commons import join_path
+from panda_vision.utils.hash_utils import compute_sha256
 
 
 def cut_image(bbox: tuple, page_num: int, page: fitz.Page, return_path, imageWriter: DataWriter):
-    """À partir de la page page_num, découpe une image jpg selon les coordonnées bbox et retourne le chemin de l'image. save_path doit supporter à la fois s3 et local,
+    """À partir de la page page_num, découpe une image jpg selon les coordonnées bbox et retourne le chemin de l'image.,
     l'image est stockée sous save_path, avec comme nom de fichier:
     {page_num}_{bbox[0]}_{bbox[1]}_{bbox[2]}_{bbox[3]}.jpg , les nombres dans bbox sont arrondis."""
     # Concaténation du nom de fichier

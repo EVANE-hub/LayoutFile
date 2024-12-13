@@ -40,7 +40,7 @@ run:
   world_size: 1
   dist_url: "env://"
   distributed: True
-  distributed_type: ddp  # or fsdp when train llm
+  distributed_type: ddp  
 
   generate_cfg:
     temperature: 0.0

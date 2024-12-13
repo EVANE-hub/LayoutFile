@@ -156,7 +156,6 @@ class Attention(nn.Module):
             else:
                 training_window_size = tuple(training_window_size.tolist())
                 new_num_relative_distance = (2 * training_window_size[0] - 1) * (2 * training_window_size[1] - 1) + 3
-                # new_num_relative_dis 为 所有可能的相对位置选项，包含cls-cls，tok-cls，与cls-tok
                 new_relative_position_bias_table = F.interpolate(
                     self.relative_position_bias_table[:-3, :].permute(1, 0).view(1, self.num_heads,
                                                                                  2 * self.window_size[0] - 1,
@@ -355,7 +354,6 @@ class RelativePositionBias(nn.Module):
         else:
             training_window_size = tuple(training_window_size.tolist())
             new_num_relative_distance = (2 * training_window_size[0] - 1) * (2 * training_window_size[1] - 1) + 3
-            # new_num_relative_dis 为 所有可能的相对位置选项，包含cls-cls，tok-cls，与cls-tok
             new_relative_position_bias_table = F.interpolate(
                 self.relative_position_bias_table[:-3, :].permute(1, 0).view(1, self.num_heads,
                                                                              2 * self.window_size[0] - 1,

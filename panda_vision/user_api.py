@@ -10,7 +10,7 @@ Le reste concernant la construction de s3cli et l'obtention de ak, sk est fait d
 from loguru import logger
 
 from panda_vision.data.data_reader_writer import DataWriter
-from panda_vision.libs.version import __version__
+from panda_vision.utils.version import __version__
 from panda_vision.model.doc_analyze_by_custom_model import doc_analyze
 from panda_vision.pdf_parse_by_ocr import parse_pdf_by_ocr
 from panda_vision.pdf_parse_by_txt import parse_pdf_by_txt

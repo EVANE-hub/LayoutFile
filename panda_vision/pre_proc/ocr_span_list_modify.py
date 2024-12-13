@@ -1,7 +1,7 @@
 
 from panda_vision.config.drop_tag import DropTag
 from panda_vision.config.ocr_content_type import BlockType
-from panda_vision.libs.boxbase import calculate_iou, get_minbox_if_overlap_by_ratio
+from panda_vision.utils.boxbase import calculate_iou, get_minbox_if_overlap_by_ratio
 
 
 def remove_overlaps_low_confidence_spans(spans):

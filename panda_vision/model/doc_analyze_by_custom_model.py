@@ -4,8 +4,8 @@ import fitz
 import numpy as np
 from loguru import logger
 
-from panda_vision.libs.clean_memory import clean_memory
-from panda_vision.libs.config_reader import get_local_models_dir, get_device, get_table_recog_config, get_layout_config, \
+from panda_vision.utils.clean_memory import clean_memory
+from panda_vision.utils.config_reader import get_local_models_dir, get_device, get_table_recog_config, get_layout_config, \
     get_formula_config
 from panda_vision.model.model_list import MODEL
 import panda_vision.model as model_config

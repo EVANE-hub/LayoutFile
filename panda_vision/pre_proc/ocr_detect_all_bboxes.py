@@ -1,5 +1,5 @@
 from panda_vision.config.ocr_content_type import BlockType
-from panda_vision.libs.boxbase import (
+from panda_vision.utils.boxbase import (
     calculate_iou,
     calculate_overlap_area_in_bbox1_area_ratio,
     calculate_vertical_projection_overlap_ratio,

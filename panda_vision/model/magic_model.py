@@ -3,12 +3,12 @@ import enum
 from panda_vision.config.model_block_type import ModelBlockTypeEnum
 from panda_vision.config.ocr_content_type import CategoryId, ContentType
 from panda_vision.data.dataset import Dataset
-from panda_vision.libs.boxbase import (_is_in, _is_part_overlap, bbox_distance,
+from panda_vision.utils.boxbase import (_is_in, _is_part_overlap, bbox_distance,
                                     bbox_relative_pos, box_area, calculate_iou,
                                     calculate_overlap_area_in_bbox1_area_ratio,
                                     get_overlap_area)
-from panda_vision.libs.coordinate_transform import get_scale_ratio
-from panda_vision.libs.local_math import float_gt
+from panda_vision.utils.coordinate_transform import get_scale_ratio
+from panda_vision.utils.local_math import float_gt
 from panda_vision.pre_proc.remove_bbox_overlap import _remove_overlap_between_bbox
 
 CAPATION_OVERLAP_AREA_RATIO = 0.6

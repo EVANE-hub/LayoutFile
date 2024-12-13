@@ -9,8 +9,7 @@ from loguru import logger
 import panda_vision.model as model_config
 from panda_vision.config.make_content_config import DropMode, MakeMode
 from panda_vision.data.data_reader_writer import FileBasedDataWriter
-from panda_vision.libs.draw_bbox import (draw_layout_bbox, draw_line_sort_bbox,
-                                      draw_model_bbox, draw_span_bbox)
+from panda_vision.utils.draw_bbox import (draw_layout_bbox, draw_line_sort_bbox, draw_model_bbox, draw_span_bbox)
 from panda_vision.pipe.OCRPipe import OCRPipe
 from panda_vision.pipe.TXTPipe import TXTPipe
 from panda_vision.pipe.UNIPipe import UNIPipe
@@ -82,17 +81,14 @@ def do_parse(
     if parse_method == 'auto':
         jso_useful_key = {'_pdf_type': '', 'model_list': model_list}
         pipe = UNIPipe(pdf_bytes, jso_useful_key, image_writer, is_debug=True,
-                       # start_page_id=start_page_id, end_page_id=end_page_id,
                        lang=lang,
                        layout_model=layout_model, formula_enable=formula_enable, table_enable=table_enable)
     elif parse_method == 'txt':
         pipe = TXTPipe(pdf_bytes, model_list, image_writer, is_debug=True,
-                       # start_page_id=start_page_id, end_page_id=end_page_id,
                        lang=lang,
                        layout_model=layout_model, formula_enable=formula_enable, table_enable=table_enable)
     elif parse_method == 'ocr':
         pipe = OCRPipe(pdf_bytes, model_list, image_writer, is_debug=True,
-                       # start_page_id=start_page_id, end_page_id=end_page_id,
                        lang=lang,
                        layout_model=layout_model, formula_enable=formula_enable, table_enable=table_enable)
     else:

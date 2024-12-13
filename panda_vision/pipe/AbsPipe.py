@@ -6,7 +6,7 @@ from panda_vision.data.data_reader_writer import DataWriter
 from panda_vision.dict2md.ocr_mkcontent import union_make
 from panda_vision.filter.pdf_classify_by_type import classify
 from panda_vision.filter.pdf_meta_scan import pdf_meta_scan
-from panda_vision.libs.json_compressor import JsonCompressor
+from panda_vision.utils.json_compressor import JsonCompressor
 
 
 class AbsPipe(ABC):

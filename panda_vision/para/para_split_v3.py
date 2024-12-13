@@ -4,7 +4,7 @@ from loguru import logger
 
 from panda_vision.config.constants import CROSS_PAGE, LINES_DELETED
 from panda_vision.config.ocr_content_type import BlockType, ContentType
-from panda_vision.libs.language import detect_lang
+from panda_vision.utils.language import detect_lang
 
 LINE_STOP_FLAG = (
     '.',

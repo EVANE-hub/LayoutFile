@@ -1,10 +1,5 @@
 {
-    "bucket_info":{
-        "bucket-name-1":["ak", "sk", "endpoint"],
-        "bucket-name-2":["ak", "sk", "endpoint"]
-    },
     "models-dir":"/tmp/models",
-    "layoutreader-model-dir":"/tmp/layoutreader",
     "device-mode":"cuda",
     "layout-config": {
         "model": "layoutlmv3"
@@ -16,8 +11,8 @@
     },
     "table-config": {
         "model": "rapid_table",
-        "enable": false,
+        "enable": true,
         "max_time": 400
     },
-    "config_version": "1.0.0"
+    "config_version": "0.0.1"
 }

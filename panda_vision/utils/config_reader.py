@@ -1,12 +1,9 @@
-"""Retourne le triplet AK, SK, endpoint S3 correspondant au nom du bucket."""
-
 import json
 import os
 
 from loguru import logger
 
 from panda_vision.config.constants import MODEL_NAME
-from panda_vision.libs.commons import parse_bucket_key
 
 # Définition de la constante du nom du fichier de configuration
 CONFIG_FILE_NAME = os.getenv('PANDA_VISION_CONFIG_JSON', 'PANDA-VISION-CONFIG.json')
@@ -25,34 +22,6 @@ def read_config():
     with open(config_file, 'r', encoding='utf-8') as f:
         config = json.load(f)
     return config
-
-
-def get_s3_config(bucket_name: str):
-    """Lecture depuis ~/PANDA-VISION-CONFIG.json."""
-    config = read_config()
-
-    bucket_info = config.get('bucket_info')
-    if bucket_name not in bucket_info:
-        access_key, secret_key, storage_endpoint = bucket_info['[default]']
-    else:
-        access_key, secret_key, storage_endpoint = bucket_info[bucket_name]
-
-    if access_key is None or secret_key is None or storage_endpoint is None:
-        raise Exception(f'ak, sk ou endpoint non trouvé dans {CONFIG_FILE_NAME}')
-
-    # logger.info(f"get_s3_config: ak={access_key}, sk={secret_key}, endpoint={storage_endpoint}")
-
-    return access_key, secret_key, storage_endpoint
-
-
-def get_s3_config_dict(path: str):
-    access_key, secret_key, storage_endpoint = get_s3_config(get_bucket_name(path))
-    return {'ak': access_key, 'sk': secret_key, 'endpoint': storage_endpoint}
-
-
-def get_bucket_name(path):
-    bucket, key = parse_bucket_key(path)
-    return bucket
 
 
 def get_local_models_dir():
@@ -115,7 +84,3 @@ def get_formula_config():
         return json.loads(f'{{"mfd_model": "{MODEL_NAME.YOLO_V8_MFD}","mfr_model": "{MODEL_NAME.UniMerNet_v2_Small}","enable": true}}')
     else:
         return formula_config
-
-
-if __name__ == '__main__':
-    ak, sk, endpoint = get_s3_config('llm-raw')

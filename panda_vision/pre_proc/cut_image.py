@@ -1,8 +1,8 @@
 from loguru import logger
 
 from panda_vision.config.ocr_content_type import ContentType
-from panda_vision.libs.commons import join_path
-from panda_vision.libs.pdf_image_tools import cut_image
+from panda_vision.utils.commons import join_path
+from panda_vision.utils.pdf_image_tools import cut_image
 
 
 def ocr_cut_image_and_table(spans, page, page_id, pdf_bytes_md5, imageWriter):

@@ -4,11 +4,13 @@ from loguru import logger
 
 from panda_vision.config.make_content_config import DropMode, MakeMode
 from panda_vision.config.ocr_content_type import BlockType, ContentType
-from panda_vision.libs.commons import join_path
-from panda_vision.libs.language import detect_lang
-from panda_vision.libs.markdown_utils import ocr_escape_special_markdown_char
-from panda_vision.para.para_split_v3 import ListLineTag
+from panda_vision.utils.commons import join_path
+from panda_vision.utils.language import detect_lang
+from panda_vision.utils.markdown_utils import ocr_escape_special_markdown_char
 
+class ListLineTag:
+    IS_LIST_START_LINE = 'is_list_start_line'
+    IS_LIST_END_LINE = 'is_list_end_line'
 
 def __is_hyphen_at_line_end(line):
     """Vérifie si une ligne se termine par une ou plusieurs lettres suivies d'un trait d'union.
@@ -152,16 +154,6 @@ def detect_language(text):
             return 'unknown'
     else:
         return 'empty'
-
-
-# Séparation des ligatures
-def __replace_ligatures(text: str):
-    text = re.sub(r'ﬁ', 'fi', text)  # Remplace la ligature fi
-    text = re.sub(r'ﬂ', 'fl', text)  # Remplace la ligature fl
-    text = re.sub(r'ﬀ', 'ff', text)  # Remplace la ligature ff
-    text = re.sub(r'ﬃ', 'ffi', text)  # Remplace la ligature ffi
-    text = re.sub(r'ﬄ', 'ffl', text)  # Remplace la ligature ffl
-    return text
 
 
 def merge_para_with_text(para_block):

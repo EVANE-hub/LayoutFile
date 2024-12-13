@@ -42,7 +42,6 @@ def download_and_modify_json(url, local_filename, modifications):
 
 
 if __name__ == '__main__':
-    # Téléchargement des modèles
     model_dir = snapshot_download(
         'opendatalab/PDF-Extract-Kit-1.0', 
         allow_patterns=PANDA_VISION_PATTERNS
@@ -56,7 +55,6 @@ if __name__ == '__main__':
     print(f'Le répertoire des modèles est : {model_dir}')
     print(f'Le répertoire du modèle layoutreader est : {layoutreader_model_dir}')
 
-    # Configuration du fichier JSON
     config_file = os.path.join(os.path.expanduser('~'), CONFIG_FILENAME)
     json_mods = {
         'models-dir': model_dir,

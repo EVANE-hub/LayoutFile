@@ -29,15 +29,3 @@ def mymax(alist: list):
         return max(alist)
 
 
-def parse_bucket_key(s3_full_path: str):
-    """
-    Entrée: s3://bucket/path/to/my/file.txt
-    Sortie: bucket, path/to/my/file.txt
-    """
-    s3_full_path = s3_full_path.strip()
-    if s3_full_path.startswith("s3://"):
-        s3_full_path = s3_full_path[5:]
-    if s3_full_path.startswith("/"):
-        s3_full_path = s3_full_path[1:]
-    bucket, key = s3_full_path.split("/", 1)
-    return bucket, key

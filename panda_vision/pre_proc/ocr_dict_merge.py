@@ -1,5 +1,5 @@
 from panda_vision.config.ocr_content_type import BlockType, ContentType
-from panda_vision.libs.boxbase import __is_overlaps_y_exceeds_threshold, calculate_overlap_area_in_bbox1_area_ratio
+from panda_vision.utils.boxbase import __is_overlaps_y_exceeds_threshold, calculate_overlap_area_in_bbox1_area_ratio
 
 
 # Trier les spans dans chaque ligne de gauche à droite

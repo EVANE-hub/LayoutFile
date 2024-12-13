@@ -14,9 +14,9 @@ from gradio_pdf import PDF
 from loguru import logger
 
 # Imports locaux
-from panda_vision.libs.hash_utils import compute_sha256
-from panda_vision.rw.AbsReaderWriter import AbsReaderWriter
-from panda_vision.rw.DiskReaderWriter import DiskReaderWriter
+from panda_vision.utils.hash_utils import compute_sha256
+from panda_vision.reader.AbsReaderWriter import AbsReaderWriter
+from panda_vision.reader.DiskReaderWriter import DiskReaderWriter
 from panda_vision.tools.common import do_parse, prepare_env
 
 # Configuration initiale
@@ -47,10 +47,9 @@ devanagari_lang = [
     'hi', 'mr', 'ne', 'bh', 'mai', 'ang', 'bho', 'mah', 'sck', 'new', 'gom',
     'sa', 'bgc'
 ]
-other_lang = ['ch', 'en', 'korean', 'japan', 'chinese_cht', 'ta', 'te', 'ka']
 
 all_lang = [""]
-all_lang.extend([*other_lang, *latin_lang, *arabic_lang, *cyrillic_lang, *devanagari_lang])
+all_lang.extend([ *latin_lang, *arabic_lang, *cyrillic_lang, *devanagari_lang])
 
 def read_fn(path):
     """Lecture d'un fichier avec DiskReaderWriter."""
@@ -168,7 +167,7 @@ if __name__ == "__main__":
                 max_pages = gr.Slider(1, 10, 5, step=1, label="Max convert pages")
                 
                 with gr.Row():
-                    layout_mode = gr.Dropdown(["layoutlmv3", "doclayout_yolo"], label="Layout model", value="layoutlmv3")
+                    layout_mode = gr.Dropdown(["layoutlmv3", "doclayout_yolo"], label="Layout model", value="doclayout_yolo")
                     language = gr.Dropdown(all_lang, label="Language", value="")
                 
                 with gr.Row():

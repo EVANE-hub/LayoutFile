@@ -3,35 +3,30 @@ import os
 from pathlib import Path
 
 from panda_vision.config.exceptions import EmptyData, InvalidParams
-from panda_vision.data.data_reader_writer import (FileBasedDataReader,
-                                               MultiBucketS3DataReader)
+from panda_vision.data.data_reader_writer import (FileBasedDataReader)
 from panda_vision.data.dataset import ImageDataset, PymuDocDataset
 
 
 def read_jsonl(
-    s3_path_or_local: str, s3_client: MultiBucketS3DataReader | None = None
+    path: str
 ) -> list[PymuDocDataset]:
     """Lit le fichier jsonl et retourne la liste des PymuDocDataset.
 
     Args:
-        s3_path_or_local (str): fichier local ou chemin s3
-        s3_client (MultiBucketS3DataReader | None, optional): client s3 qui supporte plusieurs buckets. Par défaut None.
+        path (str): fichier local
 
     Raises:
-        InvalidParams: si s3_path_or_local est un chemin s3 mais s3_client n'est pas fourni.
+        InvalidParams: si path est un chemin s3.
         EmptyData: si aucun emplacement de fichier pdf n'est fourni dans une ligne du fichier jsonl.
-        InvalidParams: si l'emplacement du fichier est un chemin s3 mais s3_client n'est pas fourni
 
     Returns:
         list[PymuDocDataset]: chaque ligne du fichier jsonl sera convertie en PymuDocDataset
     """
     bits_arr = []
-    if s3_path_or_local.startswith('s3://'):
-        if s3_client is None:
-            raise InvalidParams('s3_client est requis quand s3_path est fourni')
-        jsonl_bits = s3_client.read(s3_path_or_local)
+    if path.startswith('s3://'):
+        raise InvalidParams('path ne doit pas être un chemin s3')
     else:
-        jsonl_bits = FileBasedDataReader('').read(s3_path_or_local)
+        jsonl_bits = FileBasedDataReader('').read(path)
     jsonl_d = [
         json.loads(line) for line in jsonl_bits.decode().split('\n') if line.strip()
     ]
@@ -40,9 +35,7 @@ def read_jsonl(
         if len(pdf_path) == 0:
             raise EmptyData("l'emplacement du fichier pdf est vide")
         if pdf_path.startswith('s3://'):
-            if s3_client is None:
-                raise InvalidParams('s3_client est requis quand s3_path est fourni')
-            bits_arr.append(s3_client.read(pdf_path))
+            raise InvalidParams('pdf_path ne doit pas être un chemin s3')
         else:
             bits_arr.append(FileBasedDataReader('').read(pdf_path))
     return [PymuDocDataset(bits) for bits in bits_arr]

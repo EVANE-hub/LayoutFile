@@ -1,5 +1,5 @@
 import os
-from panda_vision.rw.AbsReaderWriter import AbsReaderWriter
+from panda_vision.reader.AbsReaderWriter import AbsReaderWriter
 from loguru import logger
 
 

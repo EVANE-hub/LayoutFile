@@ -1,5 +1,5 @@
 from panda_vision.config.drop_reason import DropReason
-from panda_vision.libs.boxbase import _is_in, _is_part_overlap
+from panda_vision.utils.boxbase import _is_in, _is_part_overlap
 
 
 def _remove_overlap_between_bbox(bbox1, bbox2):

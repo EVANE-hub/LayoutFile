@@ -6,7 +6,7 @@ from ppstructure.table.predict_table import TableSystem
 from ppstructure.utility import init_args
 from PIL import Image
 
-from panda_vision.config.constants import *  # noqa: F403
+from panda_vision.config.constants import * 
 
 
 class TableMasterPaddleModel(object):

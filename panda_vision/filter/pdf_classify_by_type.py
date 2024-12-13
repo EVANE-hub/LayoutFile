@@ -16,7 +16,7 @@ import click
 import numpy as np
 from loguru import logger
 
-from panda_vision.libs.commons import mymax, get_top_percent_list
+from panda_vision.utils.commons import mymax, get_top_percent_list
 from panda_vision.filter.pdf_meta_scan import scan_max_page, junk_limit_min
 
 TEXT_LEN_THRESHOLD = 100

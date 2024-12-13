@@ -20,7 +20,6 @@ class MathDataset(Dataset):
         return len(self.image_paths)
 
     def __getitem__(self, idx):
-        # if not pil image, then convert to pil image
         if isinstance(self.image_paths[idx], str):
             raw_image = Image.open(self.image_paths[idx])
         else:
@@ -31,7 +30,7 @@ class MathDataset(Dataset):
 
 
 def latex_rm_whitespace(s: str):
-    """Remove unnecessary whitespace from LaTeX code.
+    """Supprime les espaces inutiles du code LaTeX.
     """
     text_reg = r'(\\(operatorname|mathrm|text|mathbf)\s?\*? {.*?})'
     letter = '[a-zA-Z]'
@@ -93,6 +92,3 @@ class UnimernetModel(object):
         for res, latex in zip(formula_list, mfr_res):
             res['latex'] = latex_rm_whitespace(latex)
         return formula_list
-
-
-

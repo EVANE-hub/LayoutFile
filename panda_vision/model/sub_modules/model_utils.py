@@ -4,7 +4,7 @@ import torch
 from PIL import Image
 from loguru import logger
 
-from panda_vision.libs.clean_memory import clean_memory
+from panda_vision.utils.clean_memory import clean_memory
 
 
 def crop_img(input_res, input_pil_img, crop_paste_x=0, crop_paste_y=0):
