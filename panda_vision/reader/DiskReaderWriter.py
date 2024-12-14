@@ -36,7 +36,6 @@ class DiskReaderWriter(AbsReaderWriter):
         if mode == AbsReaderWriter.MODE_TXT:
             with open(abspath, "w", encoding=self.encoding, errors="replace") as f:
                 f.write(content)
-
         elif mode == AbsReaderWriter.MODE_BIN:
             with open(abspath, "wb") as f:
                 f.write(content)
@@ -50,25 +49,3 @@ class DiskReaderWriter(AbsReaderWriter):
         with open(abspath, "rb") as f:
             f.seek(offset)
             return f.read(limit)
-
-
-if __name__ == "__main__":
-    if 0:
-        file_path = "io/test/example.txt"
-        drw = DiskReaderWriter("D:\projects\papayfork\Magic-PDF\magic_pdf")
-
-        # Écrire le contenu dans le fichier
-        drw.write(b"Hello, World!", path="io/test/example.txt", mode="binary")
-
-        # Lire le contenu du fichier
-        content = drw.read(path=file_path)
-        if content:
-            logger.info(f"Contenu lu depuis {file_path}: {content}")
-    if 1:
-        drw = DiskReaderWriter("/opt/data/pdf/resources/test/io/")
-        content_bin = drw.read_offset("1.txt")
-        assert content_bin == b"ABCD!"
-
-        content_bin = drw.read_offset("1.txt", offset=1, limit=2)
-        assert content_bin == b"BC"
-

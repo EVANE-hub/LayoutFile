@@ -13,7 +13,7 @@ from panda_vision.config.ocr_content_type import BlockType, ContentType
 from panda_vision.data.dataset import Dataset, PageableData
 from panda_vision.utils.boxbase import calculate_overlap_area_in_bbox1_area_ratio
 from panda_vision.utils.clean_memory import clean_memory
-from panda_vision.utils.config_reader import get_local_layoutreader_model_dir
+from panda_vision.config.config_reader import get_local_layoutreader_model_dir
 from panda_vision.utils.convert_utils import dict_to_list
 from panda_vision.utils.hash_utils import compute_md5
 

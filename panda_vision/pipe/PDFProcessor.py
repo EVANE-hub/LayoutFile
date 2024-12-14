@@ -11,6 +11,10 @@ from panda_vision.config.drop_reason import DropReason
 from panda_vision.filter.pdf_meta_scan import pdf_meta_scan
 from panda_vision.filter.pdf_classify_by_type import classify
 from panda_vision.dict2md.ocr_mkcontent import union_make
+from panda_vision.preprocessor.pdf_parse_by_txt import parse_pdf_by_txt
+from panda_vision.preprocessor.pdf_parse_by_ocr import parse_pdf_by_ocr
+
+
 from panda_vision.utils.version import __version__
 
 class PDFType(Enum):
@@ -51,10 +55,10 @@ class PDFProcessor:
         pdf_meta = pdf_meta_scan(pdf_bytes)
         
         if pdf_meta.get('_need_drop', False):
-            raise Exception(f"PDF meta_scan need_drop, reason: {pdf_meta['_drop_reason']}")
+            raise ValueError(f"PDF meta_scan need_drop, reason: {pdf_meta['_drop_reason']}")
             
         if pdf_meta['is_encrypted'] or pdf_meta['is_needs_password']:
-            raise Exception(f'PDF meta_scan need_drop, reason: {DropReason.ENCRYPTED}')
+            raise ValueError(f'PDF meta_scan need_drop, reason: {DropReason.ENCRYPTED}')
             
         is_text_pdf, _ = classify(
             pdf_meta['total_page'],
@@ -74,7 +78,6 @@ class PDFProcessor:
         if not self.pdf_type:
             self.pdf_type = self.classify_pdf(self.pdf_bytes)
 
-        # Analyse du document
         is_ocr = self.pdf_type in (PDFType.OCR, PDFType.UNION)
         self.model_list = doc_analyze(
             self.pdf_bytes, 
@@ -87,7 +90,6 @@ class PDFProcessor:
             table_enable=self.table_enable
         )
 
-        # Analyse selon le type
         try:
             if self.pdf_type == PDFType.TEXT:
                 self.pdf_mid_data = self._parse_txt()
@@ -103,7 +105,6 @@ class PDFProcessor:
 
     def _parse_txt(self) -> dict:
         """Analyse des PDF textuels"""
-        from panda_vision.preprocessor.pdf_parse_by_txt import parse_pdf_by_txt
         
         result = parse_pdf_by_txt(
             self.pdf_bytes,
@@ -120,7 +121,6 @@ class PDFProcessor:
 
     def _parse_ocr(self) -> dict:
         """Analyse des PDF par OCR"""
-        from panda_vision.preprocessor.pdf_parse_by_ocr import parse_pdf_by_ocr
         
         result = parse_pdf_by_ocr(
             self.pdf_bytes,
