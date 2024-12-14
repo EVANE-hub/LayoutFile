@@ -3,7 +3,6 @@ from loguru import logger
 
 from panda_vision.config.make_content_config import DropMode, MakeMode
 from panda_vision.data.data_reader_writer import DataWriter
-from panda_vision.utils.commons import join_path
 from panda_vision.model.doc_analyze_by_custom_model import doc_analyze
 from panda_vision.pipe.AbsPipe import AbsPipe
 from panda_vision.user_api import parse_ocr_pdf, parse_union_pdf

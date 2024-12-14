@@ -5,7 +5,7 @@ from io import BytesIO
 from PIL import Image
 import base64
 from panda_vision.utils.boxbase import __is_overlaps_y_exceeds_threshold
-from panda_vision.pre_proc.ocr_dict_merge import merge_spans_to_line
+from panda_vision.preprocessor.ocr_dict_merge import merge_spans_to_line
 
 from ppocr.utils.utility import check_and_read
 

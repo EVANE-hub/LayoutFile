@@ -383,7 +383,6 @@ def para_split(pdf_info_dict):
 
 if __name__ == '__main__':
     input_blocks = []
-    # Appeler la fonction
     groups = __process_blocks(input_blocks)
     for group_index, group in enumerate(groups):
         print(f'Group {group_index}: {group}')

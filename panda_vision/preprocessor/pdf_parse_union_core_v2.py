@@ -32,12 +32,12 @@ except ImportError:
     pass
 
 from panda_vision.model.sub_modules.model_init import AtomModelSingleton
-from panda_vision.para.para_split_v3 import para_split
-from panda_vision.pre_proc.construct_page_dict import ocr_construct_page_component_v2
-from panda_vision.pre_proc.cut_image import ocr_cut_image_and_table
-from panda_vision.pre_proc.ocr_detect_all_bboxes import ocr_prepare_bboxes_for_layout_split_v2
-from panda_vision.pre_proc.ocr_dict_merge import fill_spans_in_blocks, fix_block_spans_v2, fix_discarded_block
-from panda_vision.pre_proc.ocr_span_list_modify import get_qa_need_list_v2, remove_overlaps_low_confidence_spans, remove_overlaps_min_spans
+from panda_vision.utils.paragraph_splitter import para_split
+from panda_vision.preprocessor.construct_page_dict import ocr_construct_page_component_v2
+from panda_vision.preprocessor.cut_image import ocr_cut_image_and_table
+from panda_vision.preprocessor.ocr_detect_all_bboxes import ocr_prepare_bboxes_for_layout_split_v2
+from panda_vision.preprocessor.ocr_dict_merge import fill_spans_in_blocks, fix_block_spans_v2, fix_discarded_block
+from panda_vision.preprocessor.ocr_span_list_modify import get_qa_need_list_v2, remove_overlaps_low_confidence_spans, remove_overlaps_min_spans
 
 
 def __replace_STX_ETX(text_str: str):
@@ -54,7 +54,6 @@ def __replace_STX_ETX(text_str: str):
         s = s.replace('\u0003', "'")
         return s
     return text_str
-
 
 def __replace_0xfffd(text_str: str):
     """Remplacer \ufffd, car ces caractères deviennent illisibles lors de l'extraction avec pymupdf."""

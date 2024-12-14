@@ -14,20 +14,6 @@ def parse_requirements(filename):
 
 # Configuration des dépendances par type d'installation
 FULL_REQUIREMENTS = [
-    "unimernet==0.2.1",
-    "ultralytics",
-    "paddlepaddle==3.0.0b1",
-    "paddleocr==2.7.3",
-    "paddlepaddle==3.0.0b1;platform_system=='Linux'",
-    "paddlepaddle==2.6.1;platform_system=='Windows' or platform_system=='Darwin'",
-    "struct-eqtable==0.3.2",
-    "struct-eqtable==0.3.2",
-    "einops",
-    "accelerate", 
-    "doclayout_yolo==0.0.2",
-    "rapidocr-paddle",
-    "rapid_table",
-    "PyYAML",
     "detectron2 @ git+https://github.com/facebookresearch/detectron2.git"
 ]
 
@@ -43,7 +29,7 @@ if __name__ == '__main__':
         package_data={"panda_vision.resources": ["**"]},
         install_requires=parse_requirements('requirements.txt'),
         extras_require={
-            "full": FULL_REQUIREMENTS,
+            "detectron2": FULL_REQUIREMENTS,
         },
         description="Un outil pratique pour convertir des PDF en Markdown",
         long_description=long_description,

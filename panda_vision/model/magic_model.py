@@ -9,7 +9,7 @@ from panda_vision.utils.boxbase import (_is_in, _is_part_overlap, bbox_distance,
                                     get_overlap_area)
 from panda_vision.utils.coordinate_transform import get_scale_ratio
 from panda_vision.utils.local_math import float_gt
-from panda_vision.pre_proc.remove_bbox_overlap import _remove_overlap_between_bbox
+from panda_vision.preprocessor.remove_bbox_overlap import _remove_overlap_between_bbox
 
 CAPATION_OVERLAP_AREA_RATIO = 0.6
 MERGE_BOX_OVERLAP_AREA_RATIO = 1.1

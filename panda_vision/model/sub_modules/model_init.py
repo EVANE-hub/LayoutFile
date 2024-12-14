@@ -2,39 +2,28 @@ from loguru import logger
 
 from panda_vision.config.constants import MODEL_NAME
 from panda_vision.model.model_list import AtomicModel
-from panda_vision.model.sub_modules.layout.doclayout_yolo.DocLayoutYOLO import \
-    DocLayoutYOLOModel
-from panda_vision.model.sub_modules.layout.layoutlmv3.model_init import \
-    Layoutlmv3_Predictor
+from panda_vision.model.sub_modules.layout.doclayout_yolo.DocLayoutYOLO import DocLayoutYOLOModel
+from panda_vision.model.sub_modules.layout.layoutlmv3.model_init import Layoutlmv3_Predictor
 from panda_vision.model.sub_modules.mfd.yolov8.YOLOv8 import YOLOv8MFDModel
 from panda_vision.model.sub_modules.mfr.unimernet.Unimernet import UnimernetModel
-from panda_vision.model.sub_modules.ocr.paddleocr.ppocr_273_mod import \
-    ModifiedPaddleOCR
-from panda_vision.model.sub_modules.table.rapidtable.rapid_table import \
-    RapidTableModel
-# from panda_vision.model.sub_modules.ocr.paddleocr.ppocr_291_mod import ModifiedPaddleOCR
-from panda_vision.model.sub_modules.table.structeqtable.struct_eqtable import \
-    StructTableModel
-from panda_vision.model.sub_modules.table.tablemaster.tablemaster_paddle import \
-    TableMasterPaddleModel
+from panda_vision.model.sub_modules.ocr.paddleocr.ppocr_273_mod import ModifiedPaddleOCR
+from panda_vision.model.sub_modules.table.rapidtable.rapid_table import RapidTableModel
+from panda_vision.model.sub_modules.table.structeqtable.struct_eqtable import StructTableModel
+from panda_vision.model.sub_modules.table.tablemaster.tablemaster_paddle import TableMasterPaddleModel
 
 
 def table_model_init(table_model_type, model_path, max_time, _device_='cpu'):
-    if table_model_type == MODEL_NAME.STRUCT_EQTABLE:
-        table_model = StructTableModel(model_path, max_new_tokens=2048, max_time=max_time)
-    elif table_model_type == MODEL_NAME.TABLE_MASTER:
-        config = {
-            'model_dir': model_path,
-            'device': _device_
-        }
-        table_model = TableMasterPaddleModel(config)
-    elif table_model_type == MODEL_NAME.RAPID_TABLE:
-        table_model = RapidTableModel()
-    else:
+    models = {
+        MODEL_NAME.STRUCT_EQTABLE: lambda: StructTableModel(model_path, max_new_tokens=2048, max_time=max_time),
+        MODEL_NAME.TABLE_MASTER: lambda: TableMasterPaddleModel({'model_dir': model_path, 'device': _device_}),
+        MODEL_NAME.RAPID_TABLE: RapidTableModel
+    }
+    
+    if table_model_type not in models:
         logger.error('table model type not allow')
         exit(1)
-
-    return table_model
+    
+    return models[table_model_type]()
 
 
 def mfd_model_init(weight, device='cpu'):
@@ -61,25 +50,18 @@ def ocr_model_init(show_log: bool = False,
                    det_db_box_thresh=0.3,
                    lang=None,
                    use_dilation=True,
-                   det_db_unclip_ratio=1.8,
-                   ):
+                   det_db_unclip_ratio=1.8):
+    base_params = {
+        'show_log': show_log,
+        'det_db_box_thresh': det_db_box_thresh,
+        'use_dilation': use_dilation,
+        'det_db_unclip_ratio': det_db_unclip_ratio
+    }
+    
     if lang is not None and lang != '':
-        model = ModifiedPaddleOCR(
-            show_log=show_log,
-            det_db_box_thresh=det_db_box_thresh,
-            lang=lang,
-            use_dilation=use_dilation,
-            det_db_unclip_ratio=det_db_unclip_ratio,
-        )
-    else:
-        model = ModifiedPaddleOCR(
-            show_log=show_log,
-            det_db_box_thresh=det_db_box_thresh,
-            use_dilation=use_dilation,
-            det_db_unclip_ratio=det_db_unclip_ratio,
-            # use_angle_cls=True,
-        )
-    return model
+        base_params['lang'] = lang
+        
+    return ModifiedPaddleOCR(**base_params)
 
 
 class AtomModelSingleton:
@@ -92,9 +74,7 @@ class AtomModelSingleton:
         return cls._instance
 
     def get_atom_model(self, atom_model_name: str, **kwargs):
-        lang = kwargs.get('lang', None)
-        layout_model_name = kwargs.get('layout_model_name', None)
-        key = (atom_model_name, layout_model_name, lang)
+        key = (atom_model_name, kwargs.get('layout_model_name'), kwargs.get('lang'))
         if key not in self._models:
             self._models[key] = atom_model_init(model_name=atom_model_name, **kwargs)
         return self._models[key]

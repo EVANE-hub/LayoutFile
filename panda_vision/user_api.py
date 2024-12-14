@@ -12,8 +12,8 @@ from loguru import logger
 from panda_vision.data.data_reader_writer import DataWriter
 from panda_vision.utils.version import __version__
 from panda_vision.model.doc_analyze_by_custom_model import doc_analyze
-from panda_vision.pdf_parse_by_ocr import parse_pdf_by_ocr
-from panda_vision.pdf_parse_by_txt import parse_pdf_by_txt
+from panda_vision.preprocessor.pdf_parse_by_ocr import parse_pdf_by_ocr
+from panda_vision.preprocessor.pdf_parse_by_txt import parse_pdf_by_txt
 
 PARSE_TYPE_TXT = 'txt'
 PARSE_TYPE_OCR = 'ocr'
@@ -42,10 +42,8 @@ def parse_txt_pdf(pdf_bytes: bytes, pdf_models: list, imageWriter: DataWriter, i
 
     return pdf_info_dict
 
-
 def parse_ocr_pdf(pdf_bytes: bytes, pdf_models: list, imageWriter: DataWriter, is_debug=False,
-                  start_page_id=0, end_page_id=None, lang=None,
-                  *args, **kwargs):
+                  start_page_id=0, end_page_id=None, lang=None, *args, **kwargs):
     """Analyse des PDF par OCR."""
     pdf_info_dict = parse_pdf_by_ocr(
         pdf_bytes,
@@ -65,7 +63,6 @@ def parse_ocr_pdf(pdf_bytes: bytes, pdf_models: list, imageWriter: DataWriter, i
         pdf_info_dict['_lang'] = lang
 
     return pdf_info_dict
-
 
 def parse_union_pdf(pdf_bytes: bytes, pdf_models: list, imageWriter: DataWriter, is_debug=False,
                     input_model_is_empty: bool = False,
