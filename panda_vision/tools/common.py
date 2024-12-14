@@ -10,9 +10,7 @@ import panda_vision.model as model_config
 from panda_vision.config.make_content_config import DropMode, MakeMode
 from panda_vision.data.data_reader_writer import FileBasedDataWriter
 from panda_vision.utils.draw_bbox import (draw_layout_bbox, draw_line_sort_bbox, draw_model_bbox, draw_span_bbox)
-from panda_vision.pipe.OCRPipe import OCRPipe
-from panda_vision.pipe.TXTPipe import TXTPipe
-from panda_vision.pipe.UNIPipe import UNIPipe
+from panda_vision.pipe.PDFProcessor import PDFProcessor
 
 def prepare_env(output_dir, pdf_file_name, method):
     local_parent_dir = os.path.join(output_dir, pdf_file_name, method)
@@ -71,41 +69,14 @@ def do_parse(
     pdf_bytes = convert_pdf_bytes_to_bytes_by_pymupdf(pdf_bytes, start_page_id, end_page_id)
 
     orig_model_list = copy.deepcopy(model_list)
-    local_image_dir, local_md_dir = prepare_env(output_dir, pdf_file_name,
-                                                parse_method)
+    local_image_dir, local_md_dir = prepare_env(output_dir, pdf_file_name, parse_method)
 
-    image_writer, md_writer = FileBasedDataWriter(
-        local_image_dir), FileBasedDataWriter(local_md_dir)
+    image_writer, md_writer = FileBasedDataWriter(local_image_dir), FileBasedDataWriter(local_md_dir)
     image_dir = str(os.path.basename(local_image_dir))
 
-    if parse_method == 'auto':
-        jso_useful_key = {'_pdf_type': '', 'model_list': model_list}
-        pipe = UNIPipe(pdf_bytes, jso_useful_key, image_writer, is_debug=True,
-                       lang=lang,
-                       layout_model=layout_model, formula_enable=formula_enable, table_enable=table_enable)
-    elif parse_method == 'txt':
-        pipe = TXTPipe(pdf_bytes, model_list, image_writer, is_debug=True,
-                       lang=lang,
-                       layout_model=layout_model, formula_enable=formula_enable, table_enable=table_enable)
-    elif parse_method == 'ocr':
-        pipe = OCRPipe(pdf_bytes, model_list, image_writer, is_debug=True,
-                       lang=lang,
-                       layout_model=layout_model, formula_enable=formula_enable, table_enable=table_enable)
-    else:
-        logger.error('unknown parse method')
-        exit(1)
+    pipe = PDFProcessor(pdf_bytes, model_list, image_writer, pdf_type=parse_method, is_debug=True,lang=lang,layout_model=layout_model, formula_enable=formula_enable, table_enable=table_enable)
+    pipe.process()
 
-    pipe.pipe_classify()
-
-    if len(model_list) == 0:
-        if model_config.__use_inside_model__:
-            pipe.pipe_analyze()
-            orig_model_list = copy.deepcopy(pipe.model_list)
-        else:
-            logger.error('need model list input')
-            exit(2)
-
-    pipe.pipe_parse()
     pdf_info = pipe.pdf_mid_data['pdf_info']
     if f_draw_layout_bbox:
         draw_layout_bbox(pdf_info, pdf_bytes, local_md_dir, pdf_file_name)
@@ -116,7 +87,7 @@ def do_parse(
     if f_draw_line_sort_bbox:
         draw_line_sort_bbox(pdf_info, pdf_bytes, local_md_dir, pdf_file_name)
 
-    md_content = pipe.pipe_mk_markdown(image_dir, drop_mode=DropMode.NONE, md_make_mode=f_make_md_mode)
+    md_content = pipe.get_markdown(image_dir, drop_mode=DropMode.NONE, make_mode=f_make_md_mode)
     if f_dump_md:
         md_writer.write_string(
             f'{pdf_file_name}.md',
@@ -141,7 +112,7 @@ def do_parse(
             pdf_bytes,
         )
 
-    content_list = pipe.pipe_mk_uni_format(image_dir, drop_mode=DropMode.NONE)
+    content_list = pipe.get_content(image_dir, drop_mode=DropMode.NONE)
     if f_dump_content_list:
         md_writer.write_string(
             f'{pdf_file_name}_content_list.json',
