@@ -202,7 +202,7 @@ class GradioInterface:
         with pymupdf.open(file_path) as f:
             if f.is_pdf:
                 return file_path
-            pdf_bytes = f.convert_to_pdf()
+            pdf_bytes = f.convert_to_pdf()  
             unique_filename = f"{uuid.uuid4()}.pdf"
             tmp_file_path = os.path.join(
                 os.path.dirname(file_path), unique_filename)

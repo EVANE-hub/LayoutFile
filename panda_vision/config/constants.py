@@ -26,16 +26,6 @@ DETECT_MODEL_DIR = 'ch_PP-OCRv4_det_infer'
 # Répertoire du modèle de reconnaissance pp
 REC_MODEL_DIR = 'ch_PP-OCRv4_rec_infer'
 
-# Chemin du dictionnaire de caractères de reconnaissance pp
-REC_CHAR_DICT = ''
-
-# Répertoire de copie de reconnaissance pp
-PP_REC_DIRECTORY = '.paddleocr/whl/rec/ch/ch_PP-OCRv4_rec_infer'
-
-# Répertoire de copie de détection pp
-PP_DET_DIRECTORY = '.paddleocr/whl/det/ch/ch_PP-OCRv4_det_infer'
-
-
 class MODEL_NAME:
     # Algorithme de structure de tableau pp
     TABLE_MASTER = 'tablemaster'
@@ -43,5 +33,5 @@ class MODEL_NAME:
     DocLayout_YOLO = 'doclayout_yolo'
     LAYOUTLMv3 = 'layoutlmv3'
     YOLO_V8_MFD = 'yolo_v8_mfd'
-    UniMerNet_v2_Small = 'unimernet_small'
+    UniMerNet_v2_Small = 'unimernet_base'
     RAPID_TABLE = 'rapid_table'

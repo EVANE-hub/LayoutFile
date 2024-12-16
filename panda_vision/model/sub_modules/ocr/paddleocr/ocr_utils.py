@@ -52,13 +52,13 @@ def check_img(img):
 
 
 def bbox_to_points(bbox):
-    """ 将bbox格式转换为四个顶点的数组 """
+    """ Convertir le format bbox en un tableau de quatre sommets """
     x0, y0, x1, y1 = bbox
     return np.array([[x0, y0], [x1, y0], [x1, y1], [x0, y1]]).astype('float32')
 
 
 def points_to_bbox(points):
-    """ 将四个顶点的数组转换为bbox格式 """
+    """ Convertir un tableau de quatre sommets en format bbox """
     x0, y0 = points[0]
     x1, _ = points[1]
     _, y1 = points[2]
@@ -66,24 +66,24 @@ def points_to_bbox(points):
 
 
 def merge_intervals(intervals):
-    # Sort the intervals based on the start value
+    # Trier les intervalles en fonction de la valeur de début
     intervals.sort(key=lambda x: x[0])
 
     merged = []
     for interval in intervals:
-        # If the list of merged intervals is empty or if the current
-        # interval does not overlap with the previous, simply append it.
+        # Si la liste des intervalles fusionnés est vide ou si l'intervalle actuel
+        # ne chevauche pas le précédent, il suffit de l'ajouter.
         if not merged or merged[-1][1] < interval[0]:
             merged.append(interval)
         else:
-            # Otherwise, there is overlap, so we merge the current and previous intervals.
+            # Sinon, il y a chevauchement, donc nous fusionnons les intervalles actuel et précédent.
             merged[-1][1] = max(merged[-1][1], interval[1])
 
     return merged
 
 
 def remove_intervals(original, masks):
-    # Merge all mask intervals
+    # Fusionner tous les intervalles de masque
     merged_masks = merge_intervals(masks)
 
     result = []
@@ -92,21 +92,21 @@ def remove_intervals(original, masks):
     for mask in merged_masks:
         mask_start, mask_end = mask
 
-        # If the mask starts after the original range, ignore it
+        # Si le masque commence après la plage originale, l'ignorer
         if mask_start > original_end:
             continue
 
-        # If the mask ends before the original range starts, ignore it
+        # Si le masque se termine avant le début de la plage originale, l'ignorer
         if mask_end < original_start:
             continue
 
-        # Remove the masked part from the original range
+        # Supprimer la partie masquée de la plage originale
         if original_start < mask_start:
             result.append([original_start, mask_start - 1])
 
         original_start = max(mask_end + 1, original_start)
 
-    # Add the remaining part of the original range, if any
+    # Ajouter la partie restante de la plage originale, le cas échéant
     if original_start <= original_end:
         result.append([original_start, original_end])
 
@@ -143,55 +143,55 @@ def update_det_boxes(dt_boxes, mfd_res):
 
 def merge_overlapping_spans(spans):
     """
-    Merges overlapping spans on the same line.
+    Fusionne les intervalles qui se chevauchent sur la même ligne.
 
-    :param spans: A list of span coordinates [(x1, y1, x2, y2), ...]
-    :return: A list of merged spans
+    :param spans: Une liste de coordonnées d'intervalles [(x1, y1, x2, y2), ...]
+    :return: Une liste d'intervalles fusionnés
     """
-    # Return an empty list if the input spans list is empty
+    # Retourner une liste vide si la liste d'intervalles d'entrée est vide
     if not spans:
         return []
 
-    # Sort spans by their starting x-coordinate
+    # Trier les intervalles par leur coordonnée x de départ
     spans.sort(key=lambda x: x[0])
 
-    # Initialize the list of merged spans
+    # Initialiser la liste des intervalles fusionnés
     merged = []
     for span in spans:
-        # Unpack span coordinates
+        # Décompresser les coordonnées de l'intervalle
         x1, y1, x2, y2 = span
-        # If the merged list is empty or there's no horizontal overlap, add the span directly
+        # Si la liste fusionnée est vide ou s'il n'y a pas de chevauchement horizontal, ajouter l'intervalle directement
         if not merged or merged[-1][2] < x1:
             merged.append(span)
         else:
-            # If there is horizontal overlap, merge the current span with the previous one
+            # S'il y a chevauchement horizontal, fusionner l'intervalle actuel avec le précédent
             last_span = merged.pop()
-            # Update the merged span's top-left corner to the smaller (x1, y1) and bottom-right to the larger (x2, y2)
+            # Mettre à jour le coin supérieur gauche de l'intervalle fusionné avec le plus petit (x1, y1) et le coin inférieur droit avec le plus grand (x2, y2)
             x1 = min(last_span[0], x1)
             y1 = min(last_span[1], y1)
             x2 = max(last_span[2], x2)
             y2 = max(last_span[3], y2)
-            # Add the merged span back to the list
+            # Ajouter l'intervalle fusionné à la liste
             merged.append((x1, y1, x2, y2))
 
-    # Return the list of merged spans
+    # Retourner la liste des intervalles fusionnés
     return merged
 
 
 def merge_det_boxes(dt_boxes):
     """
-    Merge detection boxes.
+    Fusionner les boîtes de détection.
 
-    This function takes a list of detected bounding boxes, each represented by four corner points.
-    The goal is to merge these bounding boxes into larger text regions.
+    Cette fonction prend une liste de boîtes de détection, chacune représentée par quatre points d'angle.
+    L'objectif est de fusionner ces boîtes en régions de texte plus grandes.
 
-    Parameters:
-    dt_boxes (list): A list containing multiple text detection boxes, where each box is defined by four corner points.
+    Paramètres:
+    dt_boxes (list): Une liste contenant plusieurs boîtes de détection de texte, où chaque boîte est définie par quatre points d'angle.
 
-    Returns:
-    list: A list containing the merged text regions, where each region is represented by four corner points.
+    Retourne:
+    list: Une liste contenant les régions de texte fusionnées, où chaque région est représentée par quatre points d'angle.
     """
-    # Convert the detection boxes into a dictionary format with bounding boxes and type
+    # Convertir les boîtes de détection en un format de dictionnaire avec des boîtes et des types
     dt_boxes_dict_list = []
     angle_boxes_list = []
     for text_box in dt_boxes:
@@ -207,20 +207,20 @@ def merge_det_boxes(dt_boxes):
         }
         dt_boxes_dict_list.append(text_box_dict)
 
-    # Merge adjacent text regions into lines
+    # Fusionner les régions de texte adjacentes en lignes
     lines = merge_spans_to_line(dt_boxes_dict_list)
 
-    # Initialize a new list for storing the merged text regions
+    # Initialiser une nouvelle liste pour stocker les régions de texte fusionnées
     new_dt_boxes = []
     for line in lines:
         line_bbox_list = []
         for span in line:
             line_bbox_list.append(span['bbox'])
 
-        # Merge overlapping text regions within the same line
+        # Fusionner les régions de texte qui se chevauchent dans la même ligne
         merged_spans = merge_overlapping_spans(line_bbox_list)
 
-        # Convert the merged text regions back to point format and add them to the new detection box list
+        # Convertir les régions de texte fusionnées en format de points et les ajouter à la nouvelle liste de boîtes de détection
         for span in merged_spans:
             new_dt_boxes.append(bbox_to_points(span))
 
@@ -231,16 +231,16 @@ def merge_det_boxes(dt_boxes):
 
 def get_adjusted_mfdetrec_res(single_page_mfdetrec_res, useful_list):
     paste_x, paste_y, xmin, ymin, xmax, ymax, new_width, new_height = useful_list
-    # Adjust the coordinates of the formula area
+    # Ajuster les coordonnées de la zone de formule
     adjusted_mfdetrec_res = []
     for mf_res in single_page_mfdetrec_res:
         mf_xmin, mf_ymin, mf_xmax, mf_ymax = mf_res["bbox"]
-        # Adjust the coordinates of the formula area to the coordinates relative to the cropping area
+        # Ajuster les coordonnées de la zone de formule aux coordonnées relatives à la zone de recadrage
         x0 = mf_xmin - xmin + paste_x
         y0 = mf_ymin - ymin + paste_y
         x1 = mf_xmax - xmin + paste_x
         y1 = mf_ymax - ymin + paste_y
-        # Filter formula blocks outside the graph
+        # Filtrer les blocs de formule en dehors du graphique
         if any([x1 < 0, y1 < 0]) or any([x0 > new_width, y0 > new_height]):
             continue
         else:
@@ -259,7 +259,7 @@ def get_ocr_result_list(ocr_res, useful_list):
             p1, p2, p3, p4 = box_ocr_res[0]
             text, score = box_ocr_res[1]
             # logger.info(f"text: {text}, score: {score}")
-            if score < 0.6:  # 过滤低置信度的结果
+            if score < 0.6:  # Filtrer les résultats de faible confiance
                 continue
         else:
             p1, p2, p3, p4 = box_ocr_res
@@ -269,8 +269,8 @@ def get_ocr_result_list(ocr_res, useful_list):
         poly = [p1, p2, p3, p4]
         if calculate_is_angle(poly):
             # logger.info(f"average_angle_degrees: {average_angle_degrees}, text: {text}")
-            # 与x轴的夹角超过0.5度，对边界做一下矫正
-            # 计算几何中心
+            # Si l'angle avec l'axe des x dépasse 0,5 degré, ajuster les bordures
+            # Calculer le centre géométrique
             x_center = sum(point[0] for point in poly) / 4
             y_center = sum(point[1] for point in poly) / 4
             new_height = ((p4[1] - p1[1]) + (p3[1] - p2[1])) / 2
@@ -280,7 +280,7 @@ def get_ocr_result_list(ocr_res, useful_list):
             p3 = [x_center + new_width / 2, y_center + new_height / 2]
             p4 = [x_center - new_width / 2, y_center + new_height / 2]
 
-        # Convert the coordinates back to the original coordinate system
+        # Convertir les coordonnées dans le système de coordonnées d'origine
         p1 = [p1[0] - paste_x + xmin, p1[1] - paste_y + ymin]
         p2 = [p2[0] - paste_x + xmin, p2[1] - paste_y + ymin]
         p3 = [p3[0] - paste_x + xmin, p3[1] - paste_y + ymin]

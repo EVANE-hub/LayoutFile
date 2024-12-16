@@ -57,7 +57,7 @@ class ModelDownloader:
         """Télécharge les modèles et met à jour la configuration."""
         try:
             model_dir = snapshot_download(
-                'opendatalab/PDF-Extract-Kit-1.0', 
+                'Leyogho/LayoutVision', 
                 allow_patterns=ModelPaths.PANDA_VISION_PATTERNS
             )
             model_dir = os.path.join(model_dir, 'models')

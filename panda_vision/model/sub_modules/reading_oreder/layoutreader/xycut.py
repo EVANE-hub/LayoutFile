@@ -1,90 +1,59 @@
-from typing import List
+from typing import List, Tuple, Optional
 import cv2
 import numpy as np
 
 
-def projection_by_bboxes(boxes: np.array, axis: int) -> np.ndarray:
-    """
-    Obtient un histogramme de projection à partir d'un ensemble de bbox, sortie sous forme de per-pixel
+def projection_by_bboxes(boxes: np.ndarray, axis: int) -> np.ndarray:
+    """Calcule l'histogramme de projection des boîtes englobantes.
 
     Args:
-        boxes: [N, 4]
-        axis: 0-projection des coordonnées x horizontalement, 1-projection des coordonnées y verticalement
+        boxes: Tableau de forme [N, 4] contenant les coordonnées des boîtes
+        axis: 0 pour projection horizontale, 1 pour projection verticale
 
     Returns:
-        Histogramme de projection 1D, longueur = valeur max des coordonnées dans la direction de projection
-        (nous n'avons pas besoin de la longueur réelle de l'image car nous cherchons juste les intervalles entre les zones de texte)
+        Histogramme de projection 1D
     """
-    assert axis in [0, 1]
+    if axis not in (0, 1):
+        raise ValueError("L'axe doit être 0 ou 1")
+    
     length = np.max(boxes[:, axis::2])
     res = np.zeros(length, dtype=int)
-    # TODO: comment supprimer la boucle for?
+    
+    # Vectorisation possible avec np.add.at
     for start, end in boxes[:, axis::2]:
         res[start:end] += 1
     return res
 
 
-# de: https://dothinking.github.io/2021-06-19-%E9%80%92%E5%BD%92%E6%8A%95%E5%BD%B1%E5%88%86%E5%89%B2%E7%AE%97%E6%B3%95/#:~:text=%E9%80%92%E5%BD%92%E6%8A%95%E5%BD%B1%E5%88%86%E5%89%B2%EF%BC%88Recursive%20XY,%EF%BC%8C%E5%8F%AF%E4%BB%A5%E5%88%92%E5%88%86%E6%AE%B5%E8%90%BD%E3%80%81%E8%A1%8C%E3%80%82
-def split_projection_profile(arr_values: np.array, min_value: float, min_gap: float):
-    """Divise le profil de projection:
-
-    ```
-                              ┌──┐
-         arr_values           │  │       ┌─┐───
-             ┌──┐             │  │       │ │ |
-             │  │             │  │ ┌───┐ │ │min_value
-             │  │<- min_gap ->│  │ │   │ │ │ |
-         ────┴──┴─────────────┴──┴─┴───┴─┴─┴─┴───
-         0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
-    ```
-
-    Args:
-        arr_values (np.array): Tableau 1D représentant le profil de projection.
-        min_value (float): Ignore le profil si `arr_value` est inférieur à `min_value`.
-        min_gap (float): Ignore l'écart s'il est inférieur à cette valeur.
-
-    Returns:
-        tuple: Index de début et index de fin des groupes divisés.
-    """
-    # tous les index avec une hauteur de projection dépassant le seuil
+def split_projection_profile(
+    arr_values: np.ndarray, 
+    min_value: float, 
+    min_gap: float
+) -> Optional[Tuple[np.ndarray, np.ndarray]]:
+    """Divise le profil de projection en groupes."""
     arr_index = np.where(arr_values > min_value)[0]
     if not len(arr_index):
-        return
+        return None
 
-    # trouve les intervalles nuls entre les projections adjacentes
-    # |  |                    ||
-    # ||||<- intervalle-nul-> |||||
     arr_diff = arr_index[1:] - arr_index[0:-1]
     arr_diff_index = np.where(arr_diff > min_gap)[0]
     arr_zero_intvl_start = arr_index[arr_diff_index]
     arr_zero_intvl_end = arr_index[arr_diff_index + 1]
 
-    # convertit en index de plage de projection:
-    # l'index de début de l'intervalle nul est l'index de fin de la projection
     arr_start = np.insert(arr_zero_intvl_end, 0, arr_index[0])
-    arr_end = np.append(arr_zero_intvl_start, arr_index[-1])
-    arr_end += 1  # l'index de fin sera exclu comme tranche d'index
+    arr_end = np.append(arr_zero_intvl_start, arr_index[-1]) + 1
 
     return arr_start, arr_end
 
 
-def recursive_xy_cut(boxes: np.ndarray, indices: List[int], res: List[int]):
-    """
-
-    Args:
-        boxes: (N, 4)
-        indices: représente toujours l'index des box dans les données d'origine pendant la récursion
-        res: stocke les résultats
-
-    """
-    # projection vers l'axe y
-    assert len(boxes) == len(indices)
+def recursive_xy_cut(boxes: np.ndarray, indices: List[int], res: List[int]) -> None:
+    """Applique récursivement l'algorithme de découpage XY."""
+    if not len(boxes) == len(indices):
+        return
 
     _indices = boxes[:, 1].argsort()
     y_sorted_boxes = boxes[_indices]
     y_sorted_indices = indices[_indices]
-
-    # debug_vis(y_sorted_boxes, y_sorted_indices)
 
     y_projection = projection_by_bboxes(boxes=y_sorted_boxes, axis=1)
     pos_y = split_projection_profile(y_projection, 0, 1)
@@ -93,7 +62,6 @@ def recursive_xy_cut(boxes: np.ndarray, indices: List[int], res: List[int]):
 
     arr_y0, arr_y1 = pos_y
     for r0, r1 in zip(arr_y0, arr_y1):
-        # [r0, r1] représente la zone avec bbox après découpage horizontal, ces zones seront découpées verticalement
         _indices = (r0 <= y_sorted_boxes[:, 1]) & (y_sorted_boxes[:, 1] < r1)
 
         y_sorted_boxes_chunk = y_sorted_boxes[_indices]
@@ -103,7 +71,6 @@ def recursive_xy_cut(boxes: np.ndarray, indices: List[int], res: List[int]):
         x_sorted_boxes_chunk = y_sorted_boxes_chunk[_indices]
         x_sorted_indices_chunk = y_sorted_indices_chunk[_indices]
 
-        # projection dans la direction x
         x_projection = projection_by_bboxes(boxes=x_sorted_boxes_chunk, axis=0)
         pos_x = split_projection_profile(x_projection, 0, 1)
         if not pos_x:
@@ -111,11 +78,9 @@ def recursive_xy_cut(boxes: np.ndarray, indices: List[int], res: List[int]):
 
         arr_x0, arr_x1 = pos_x
         if len(arr_x0) == 1:
-            # pas de découpage possible en direction x
             res.extend(x_sorted_indices_chunk)
             continue
 
-        # découpage possible en direction x, appel récursif
         for c0, c1 in zip(arr_x0, arr_x1):
             _indices = (c0 <= x_sorted_boxes_chunk[:, 0]) & (
                 x_sorted_boxes_chunk[:, 0] < c1
@@ -125,63 +90,40 @@ def recursive_xy_cut(boxes: np.ndarray, indices: List[int], res: List[int]):
             )
 
 
-def points_to_bbox(points):
-    assert len(points) == 8
+def points_to_bbox(points: np.ndarray) -> List[float]:
+    """Convertit une liste de points en boîte englobante."""
+    if len(points) != 8:
+        raise ValueError("Le tableau de points doit contenir exactement 8 valeurs")
 
-    # [x1,y1,x2,y2,x3,y3,x4,y4]
-    left = min(points[::2])
-    right = max(points[::2])
-    top = min(points[1::2])
-    bottom = max(points[1::2])
-
-    left = max(left, 0)
-    top = max(top, 0)
-    right = max(right, 0)
-    bottom = max(bottom, 0)
-    return [left, top, right, bottom]
+    x_coords = points[::2]
+    y_coords = points[1::2]
+    
+    return [
+        max(min(x_coords), 0),
+        max(min(y_coords), 0),
+        max(max(x_coords), 0),
+        max(max(y_coords), 0)
+    ]
 
 
-def bbox2points(bbox):
+def bbox2points(bbox: List[float]) -> List[float]:
+    """Convertit une boîte englobante en liste de points."""
     left, top, right, bottom = bbox
     return [left, top, right, top, right, bottom, left, bottom]
 
 
-def vis_polygon(img, points, thickness=2, color=None):
-    br2bl_color = color
-    tl2tr_color = color
-    tr2br_color = color
-    bl2tl_color = color
-    cv2.line(
-        img,
-        (points[0][0], points[0][1]),
-        (points[1][0], points[1][1]),
-        color=tl2tr_color,
-        thickness=thickness,
-    )
-
-    cv2.line(
-        img,
-        (points[1][0], points[1][1]),
-        (points[2][0], points[2][1]),
-        color=tr2br_color,
-        thickness=thickness,
-    )
-
-    cv2.line(
-        img,
-        (points[2][0], points[2][1]),
-        (points[3][0], points[3][1]),
-        color=br2bl_color,
-        thickness=thickness,
-    )
-
-    cv2.line(
-        img,
-        (points[3][0], points[3][1]),
-        (points[0][0], points[0][1]),
-        color=bl2tl_color,
-        thickness=thickness,
-    )
+def vis_polygon(
+    img: np.ndarray,
+    points: np.ndarray,
+    thickness: int = 2,
+    color: Optional[Tuple[int, int, int]] = None
+) -> np.ndarray:
+    """Dessine un polygone sur l'image."""
+    points = points.reshape(-1, 2)
+    for i in range(4):
+        pt1 = tuple(map(int, points[i]))
+        pt2 = tuple(map(int, points[(i + 1) % 4]))
+        cv2.line(img, pt1, pt2, color=color, thickness=thickness)
     return img
 
 

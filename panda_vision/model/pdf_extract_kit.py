@@ -8,8 +8,8 @@ import yaml
 from loguru import logger
 from PIL import Image
 
-os.environ['NO_ALBUMENTATIONS_UPDATE'] = '1'  # désactiver la vérification des mises à jour albumentations
-os.environ['YOLO_VERBOSE'] = 'False'  # désactiver le logger yolo
+os.environ['NO_ALBUMENTATIONS_UPDATE'] = '1' 
+os.environ['YOLO_VERBOSE'] = 'False'
 
 try:
     import torchtext

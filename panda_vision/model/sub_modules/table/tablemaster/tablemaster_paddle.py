@@ -1,71 +1,83 @@
 import os
+from typing import Union, Dict
 
 import cv2
 import numpy as np
+from PIL import Image
 from ppstructure.table.predict_table import TableSystem
 from ppstructure.utility import init_args
-from PIL import Image
 
-from panda_vision.config.constants import * 
+from panda_vision.config.constants import *
 
-
-class TableMasterPaddleModel(object):
-    """This class is responsible for converting image of table into HTML format
-    using a pre-trained model.
-
-    Attributes:
-    - table_sys: An instance of TableSystem initialized with parsed arguments.
-
-    Methods:
-    - __init__(config): Initializes the model with configuration parameters.
-    - img2html(image): Converts a PIL Image or NumPy array to HTML string.
-    - parse_args(**kwargs): Parses configuration arguments.
+class TableMasterPaddleModel:
+    """Module de conversion d'images de tableaux en format HTML.
+    
+    Ce modèle utilise PaddleOCR pour:
+    1. Détecter la structure du tableau
+    2. Reconnaître le texte dans chaque cellule
+    3. Générer une représentation HTML du tableau
     """
-
-    def __init__(self, config):
+    
+    def __init__(self, config: Dict):
+        """Initialise le modèle avec la configuration fournie.
+        
+        Args:
+            config (Dict): Dictionnaire contenant:
+                - model_dir: Chemin vers les modèles pré-entraînés
+                - device: Dispositif d'exécution ('cpu' ou 'cuda')
+                - table_max_len: Longueur maximale du tableau (optionnel)
         """
-        Parameters:
-        - config (dict): Configuration dictionary containing model_dir and device.
-        """
-        args = self.parse_args(**config)
-        self.table_sys = TableSystem(args)
+        self.table_sys = TableSystem(self.parse_args(**config))
 
-    def img2html(self, image):
-        """
-        Parameters:
-        - image (PIL.Image or np.ndarray): The image of the table to be converted.
-
-        Return:
-        - HTML (str): A string representing the HTML structure with content of the table.
+    def img2html(self, image: Union[Image.Image, np.ndarray]) -> str:
+        """Convertit une image de tableau en HTML.
+        
+        Args:
+            image: Image source au format PIL.Image ou numpy.ndarray
+            
+        Returns:
+            str: Structure HTML du tableau avec son contenu
+            
+        Note:
+            Si l'image est au format PIL, elle est convertie en BGR pour
+            être compatible avec le modèle PaddleOCR.
         """
         if isinstance(image, Image.Image):
-            image = np.asarray(image)
-            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-        pred_res, _ = self.table_sys(image)
-        pred_html = pred_res['html']
-        # res = '<td><table  border="1">' + pred_html.replace("<html><body><table>", "").replace(
-        # "</table></body></html>","") + "</table></td>\n"
-        return pred_html
+            image = cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2BGR)
+        return self.table_sys(image)[0]['html']
 
-    def parse_args(self, **kwargs):
+    def parse_args(self, **kwargs) -> object:
+        """Configure les paramètres du modèle.
+        
+        Args:
+            **kwargs: Arguments de configuration incluant:
+                - model_dir: Répertoire des modèles
+                - device: Type de processeur (cpu/cuda)
+                - table_max_len: Longueur max du tableau
+                
+        Returns:
+            object: Arguments parsés pour TableSystem
+            
+        Note:
+            Les chemins des modèles sont construits relativement au model_dir:
+            - TableMaster pour la structure
+            - Detectron pour la détection
+            - Recognition pour la reconnaissance de texte
+        """
         parser = init_args()
         model_dir = kwargs.get('model_dir')
-        table_model_dir = os.path.join(model_dir, TABLE_MASTER_DIR)  # noqa: F405
-        table_char_dict_path = os.path.join(model_dir, TABLE_MASTER_DICT)  # noqa: F405
-        det_model_dir = os.path.join(model_dir, DETECT_MODEL_DIR)  # noqa: F405
-        rec_model_dir = os.path.join(model_dir, REC_MODEL_DIR)  # noqa: F405
-        rec_char_dict_path = os.path.join(model_dir, REC_CHAR_DICT)  # noqa: F405
         device = kwargs.get('device', 'cpu')
-        use_gpu = True if device.startswith('cuda') else False
+        
         config = {
-            'use_gpu': use_gpu,
-            'table_max_len': kwargs.get('table_max_len', TABLE_MAX_LEN),  # noqa: F405
+            'use_gpu': device.startswith('cuda'),
+            'table_max_len': kwargs.get('table_max_len', TABLE_MAX_LEN),
             'table_algorithm': 'TableMaster',
-            'table_model_dir': table_model_dir,
-            'table_char_dict_path': table_char_dict_path,
-            'det_model_dir': det_model_dir,
-            'rec_model_dir': rec_model_dir,
-            'rec_char_dict_path': rec_char_dict_path,
+            'table_model_dir': os.path.join(model_dir, TABLE_MASTER_DIR),
+            'table_char_dict_path': os.path.join(model_dir, TABLE_MASTER_DICT),
+            'det_model_dir': os.path.join(model_dir, DETECT_MODEL_DIR),
+            'rec_model_dir': os.path.join(model_dir, REC_MODEL_DIR),
+            'rec_char_dict_path': os.path.join(model_dir, REC_CHAR_DICT),
         }
+        
         parser.set_defaults(**config)
         return parser.parse_args([])
