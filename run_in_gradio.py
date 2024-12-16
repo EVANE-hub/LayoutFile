@@ -17,7 +17,7 @@ from loguru import logger
 from panda_vision.utils.hash_utils import compute_sha256
 from panda_vision.reader.AbsReaderWriter import AbsReaderWriter
 from panda_vision.reader.DiskReaderWriter import DiskReaderWriter
-from panda_vision.tools.common import do_parse, prepare_env
+from panda_vision.tools.common import PDFParser, DrawingConfig, OutputConfig, ProcessingConfig
 from panda_vision.model.doc_analyze_by_custom_model import ModelSingleton
 
 class Environment:
@@ -46,9 +46,10 @@ class Environment:
     @staticmethod
     def init_models():
         try:
-            model_manager = ModelSingleton()
-            return (model_manager.get_model(False, False) and 
-                   model_manager.get_model(True, False))
+            # Création d'une seule instance du singleton
+            model_singleton = ModelSingleton()
+            return (model_singleton.get_model(False, False) and 
+                   model_singleton.get_model(True, False))
         except Exception as e:
             logger.exception(e)
             return False
@@ -71,16 +72,33 @@ class PDFProcessor:
             pdf_data = self.read_file(doc_path)
             parse_method = "ocr" if is_ocr else "auto"
             
-            local_image_dir, local_md_dir = prepare_env(
-                self.output_dir, file_name, parse_method)
-            
-            do_parse(
-                self.output_dir, file_name, pdf_data, [], parse_method, False,
-                end_page_id=end_page_id, layout_model=layout_mode,
-                formula_enable=formula_enable, table_enable=table_enable,
-                lang=language
+            # Création du parser PDF avec la nouvelle classe
+            parser = PDFParser(
+                pdf_file_name=file_name,
+                pdf_bytes=pdf_data,
+                model_list=[],
+                parse_method=parse_method,
+                output_dir=self.output_dir
             )
-            return local_md_dir, file_name
+            
+            # Configuration du traitement
+            processing_config = ProcessingConfig(
+                end_page_id=end_page_id,
+                lang=language,
+                layout_model=layout_mode,
+                formula_enable=formula_enable,
+                table_enable=table_enable
+            )
+            
+            # Exécution du parsing
+            parser.parse(
+                drawing_config=DrawingConfig(),
+                output_config=OutputConfig(),
+                processing_config=processing_config
+            )
+            
+            return parser.local_md_dir, file_name
+
         except Exception as e:
             logger.exception(e)
             return None, None

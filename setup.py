@@ -12,7 +12,6 @@ def parse_requirements(filename):
     ]
     return requires
 
-# Configuration des dépendances par type d'installation
 FULL_REQUIREMENTS = [
     "detectron2 @ git+https://github.com/facebookresearch/detectron2.git"
 ]
