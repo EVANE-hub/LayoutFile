@@ -10,7 +10,7 @@ from panda_vision.utils.json_compressor import JsonCompressor
 from panda_vision.config.drop_reason import DropReason
 from panda_vision.filter.pdf_meta_scan import pdf_meta_scan
 from panda_vision.filter.pdf_classify_by_type import classify
-from panda_vision.dict2md.ocr_mkcontent import union_make
+from panda_vision.preprocessor.ocr_mkcontent import union_make
 from panda_vision.preprocessor.pdf_parse_by_txt import parse_pdf_by_txt
 from panda_vision.preprocessor.pdf_parse_by_ocr import parse_pdf_by_ocr
 

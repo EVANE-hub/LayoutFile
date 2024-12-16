@@ -17,7 +17,7 @@ from loguru import logger
 from panda_vision.utils.hash_utils import compute_sha256
 from panda_vision.reader.AbsReaderWriter import AbsReaderWriter
 from panda_vision.reader.DiskReaderWriter import DiskReaderWriter
-from panda_vision.tools.common import PDFParser, DrawingConfig, OutputConfig, ProcessingConfig
+from panda_vision.tools.pdf_handler import PDFParser, DrawingConfig, OutputConfig, ProcessingConfig
 from panda_vision.model.doc_analyze_by_custom_model import ModelSingleton
 
 class Environment:
@@ -215,6 +215,6 @@ if __name__ == "__main__":
     if Environment.init_models():
         interface = GradioInterface()
         demo = interface.create_interface()
-        demo.launch(ssr_mode=False)
+        demo.launch(ssr_mode=False, debug=True)
     else:
         logger.error("Failed to initialize models")

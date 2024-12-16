@@ -206,6 +206,7 @@ def classify_by_img_narrow_strips(page_width, page_height, img_sz_list):
     narrow_strip_pages_ratio = narrow_strip_pages_count / len(img_sz_list)
     return narrow_strip_pages_ratio < 0.5
 
+@staticmethod
 def classify(total_page: int, page_width, page_height, img_sz_list: list, text_len_list: list, img_num_list: list,
              text_layout_list: list, invalid_chars: bool):
     """Fonction principale de classification des PDF.
@@ -248,8 +249,6 @@ def classify(total_page: int, page_width, page_height, img_sz_list: list, text_l
             file=sys.stderr)
         return False, results
 
-@click.command()
-@click.option("--json-file", type=str, help="Infos PDF")
 def main(json_file):
     if json_file is None:
         print("json_file is None", file=sys.stderr)
