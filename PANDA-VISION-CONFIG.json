@@ -1,6 +1,6 @@
 {
     "models-dir":"/tmp/models",
-    "device-mode":"cuda",
+    "device-mode":"cpu",
     "layout-config": {
         "model": "layoutlmv3"
     },
